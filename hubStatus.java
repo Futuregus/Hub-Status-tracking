@@ -16,7 +16,7 @@ public class hubStatus {
 
     /**
      * Determines if the hub is currently active based on the current match time, alliance, and game data.
-     * @param MatchTime Current match time in seconds (can be obtained from a timer)
+     * @param MatchTime Current match time in seconds can be obtained from a timer
      * @return true if the hub is active for the current alliance, false otherwise
      */
     public boolean isHubActive(double MatchTime) {
@@ -82,7 +82,7 @@ public class hubStatus {
     /**
      * Should be called periodically to work properly
      * @param isHubActiveNow use the isHubActive method to determine this value before calling startCountdown
-     * @param matchTime current match time in seconds (can be obtained from a timer)
+     * @param matchTime current match time in seconds can be obtained from a timer
      */ 
     public void startCountdown(boolean isHubActiveNow, double matchTime) {
         // If match is over ensure everything is stopped
@@ -153,7 +153,7 @@ public class hubStatus {
 
     /**
      * Returns a human-readable Label for the current match.
-     * @param matchTime current match time in seconds (can be obtained from a timer)
+     * @param matchTime current match time in seconds can be obtained from a timer
      */
     public String getShift(double matchTime) {
 
