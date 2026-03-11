@@ -58,6 +58,7 @@ public class hubStatus {
         char gd = gameData.charAt(0);
         boolean blueActiveFirst = gd == 'R';
         boolean redActiveFirst = gd == 'B';
+        boolean ourAllianceIsActiveFirst = (blueActiveFirst && isBlueAlliance) || (redActiveFirst && isRedAlliance);
 
         if (matchTime > 110) { // End game
             return hubStatusCountdown > 0;
@@ -66,13 +67,12 @@ public class hubStatus {
         // Shift 4 (85s-110s) and Shift 2 (35s-60s) hub active for the opposite alliance
         // as the first active alliance
         if (matchTime > 85 || (matchTime > 35 && matchTime <= 60)) {
-            return (blueActiveFirst && isRedAlliance) || (redActiveFirst && isBlueAlliance);
+            return (!ourAllianceIsActiveFirst);
         }
 
-        // Shift 3 (60s-85s) and Shift 1 (10s-35s) hub active for the first active
-        // alliance
+        // Shift 3 (60s-85s) and Shift 1 (10s-35s) hub active for the first active alliance
         if (matchTime > 60 || (matchTime > 10 && matchTime <= 35)) {
-            return (blueActiveFirst && isBlueAlliance) || (redActiveFirst && isRedAlliance);
+            return (ourAllianceIsActiveFirst);
         }
 
         // Transition (0s-10s)
@@ -97,8 +97,7 @@ public class hubStatus {
             return;
         }
 
-        // start endgame countdown if we just entered endgame and no countdown is
-        // running
+        // start endgame countdown 
         if (matchTime > 110 && hubStatusCountdown <= 0) {
             hubStatusCountdown = 30.0;
             wasHubActive = true;
@@ -115,8 +114,8 @@ public class hubStatus {
 
             // Special cases
             if (matchTime > 110) {
-                countdown = 30.0;
-            } else if (matchTime <= 10) { // Transition shift (0s-10s)
+                countdown = 30.0; // Endgame countdown
+            } else if (matchTime <= 10) { // Transition shift 
                 if (gameData != null && !gameData.isEmpty() && !allianceOpt.isEmpty()) {
                     char gd = gameData.charAt(0);
                     boolean blueActiveFirst = gd == 'R';
