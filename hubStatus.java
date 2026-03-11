@@ -6,16 +6,17 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 
 /**
- * this class allows you to track the status of the hub 
+ * this class allows you to track the status of the hub
  */
 public class hubStatus {
 
     public double hubStatusCountdown = 0.0;
     private boolean wasHubActive = false;
 
-
     /**
-     * Determines if the hub is currently active based on the current match time, alliance, and game data.
+     * Determines if the hub is currently active based on the current match time,
+     * alliance, and game data.
+     * 
      * @param MatchTime Current match time in seconds can be obtained from a timer
      * @return true if the hub is active for the current alliance, false otherwise
      */
@@ -34,12 +35,12 @@ public class hubStatus {
         String gameData = DriverStation.getGameSpecificMessage();
         double matchTime = MatchTime;
 
-        // If we have no game data, assume hub is active (likely early in teleop)
+        // If we have no game data, assume hub is active likely early in teleop
         if (gameData == null || gameData.isEmpty()) {
             return true;
         }
 
-        // Only evaluate hub during teleop
+        // We don't need to see if the hub is active if we're not in teleop
         if (!DriverStation.isTeleopEnabled()) {
             return false;
         }
@@ -59,17 +60,16 @@ public class hubStatus {
         boolean redActiveFirst = gd == 'B';
 
         if (matchTime > 110) { // End game
-            // During endgame, hub is active only while the endgame countdown is running.
             return hubStatusCountdown > 0;
         }
 
         // Shift 4 (85s-110s) and Shift 2 (35s-60s) hub active for the opposite alliance
-        // as the active-first alliance
+        // as the first active alliance
         if (matchTime > 85 || (matchTime > 35 && matchTime <= 60)) {
             return (blueActiveFirst && isRedAlliance) || (redActiveFirst && isBlueAlliance);
         }
 
-        // Shift 3 (60s-85s) and Shift 1 (10s-35s) hub active for the active-first
+        // Shift 3 (60s-85s) and Shift 1 (10s-35s) hub active for the first active
         // alliance
         if (matchTime > 60 || (matchTime > 10 && matchTime <= 35)) {
             return (blueActiveFirst && isBlueAlliance) || (redActiveFirst && isRedAlliance);
@@ -80,11 +80,16 @@ public class hubStatus {
     }
 
     /**
-     * Should be called periodically to work properly
-     * @param isHubActiveNow use the isHubActive method to determine this value before calling startCountdown
-     * @param matchTime current match time in seconds can be obtained from a timer
-     */ 
+     * Needs to be called periodically to properly count down
+     * 
+     * @param isHubActiveNow use the isHubActive method to determine this value
+     *                       before calling startCountdown
+     * @param matchTime      current match time in seconds can be obtained from a
+     *                       timer
+     */
     public void startCountdown(boolean isHubActiveNow, double matchTime) {
+        updateCountdown(); // make the countdown count down
+
         // If match is over ensure everything is stopped
         if (matchTime >= 140) {
             hubStatusCountdown = 0.0;
@@ -137,12 +142,9 @@ public class hubStatus {
         }
     }
 
+    // used by startCountdown to make the countdown count down
+    private void updateCountdown() {
 
-/**
- * Should be called periodically to update the hub status countdown timer.
- */
-    public void updateCountdown() {
-    
         if (hubStatusCountdown > 0) {
             hubStatusCountdown -= 0.020;
             if (hubStatusCountdown < 0) {
@@ -152,7 +154,8 @@ public class hubStatus {
     }
 
     /**
-     * Returns a human-readable Label for the current match.
+     * Returns a string representing the current shift based on the match time.
+     * 
      * @param matchTime current match time in seconds can be obtained from a timer
      */
     public String getShift(double matchTime) {
